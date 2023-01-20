@@ -4,14 +4,14 @@ from dotenv import load_dotenv
 from time import sleep
 import requests as r
 import subprocess
-import re
+# import re
 
 load_dotenv()
 if not os.path.exists('./versions/'):
     os.mkdir('./versions/')
 
 if os.getenv('VERSION') == "":
-    version = r.get("https://panel.buhikayesenin.com/api/version.php").text
+    version = r.get("https://panel.buhikayesenin.com/api/version.php").text.replace('\n', "")
     version = version[0:4]
     os.system('git clone https://github.com/ardayasar/BHS-Worker.git ./versions/' + version)
     os.environ['VERSION'] = version
