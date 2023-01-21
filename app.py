@@ -41,6 +41,10 @@ app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSI
 
 while True:
     try:
+        poll = app.poll()
+        if poll is not None:
+            app.terminate()
+            app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
         version = r.get("https://panel.buhikayesenin.com/api/version.php").text
         version = version[0:4]
         if version != os.getenv('VERSION'):
