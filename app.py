@@ -4,7 +4,16 @@ from dotenv import load_dotenv
 from time import sleep
 import requests as r
 import subprocess
-# import re
+import string
+
+def generateKey(letters_count, digits_count):
+    letters = ''.join((random.choice(string.ascii_letters) for i in range(letters_count)))
+    digits = ''.join((random.choice(string.digits) for i in range(digits_count)))
+    sample_list = list(letters + digits)
+    random.shuffle(sample_list)
+    final_string = ''.join(sample_list)
+    return final_string
+
 
 load_dotenv()
 if not os.path.exists('./versions/'):
@@ -18,18 +27,12 @@ if os.getenv('VERSION') == "":
     dotenv.set_key(dotenv.find_dotenv(), "VERSION", os.environ["VERSION"])
 
 if os.getenv('DEVICEID') == "":
-    devIDInput = input("Cihaz ID'si bulunamadı. Size verilen DEVICEID'yi yazar mısınız?: ")
-    if len(devIDInput) == 24:
-        dotenv.set_key(dotenv.find_dotenv(), "DEVICEID", devIDInput)
-    else:
-        print("Hata Mesajı: DEVICEID doğru değil")
+    temp_id = generateKey(16, 8)
+    dotenv.set_key(dotenv.find_dotenv(), "DEVICEID", temp_id)
 
 if os.getenv('AUTHKEY') == "":
-    devAUInput = input("Cihaz AUTHKYEY'i bulunamadı. Size verilen AUTHKEY'i yazar mısınız?: ")
-    if len(devAUInput) == 24:
-        dotenv.set_key(dotenv.find_dotenv(), "AUTHKEY", devAUInput)
-    else:
-        print("Hata Mesajı: AUTHKEY doğru değil")
+    temp_key = generateKey(16, 8)
+    dotenv.set_key(dotenv.find_dotenv(), "AUTHKEY", temp_key)
 
 
 os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
