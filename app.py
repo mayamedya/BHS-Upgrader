@@ -5,6 +5,7 @@ from time import sleep
 import requests as r
 import subprocess
 import string
+import random
 
 def generateKey(letters_count, digits_count):
     letters = ''.join((random.choice(string.ascii_letters) for i in range(letters_count)))
