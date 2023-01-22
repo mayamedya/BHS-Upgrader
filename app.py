@@ -30,10 +30,12 @@ if os.getenv('VERSION') == "":
 if os.getenv('DEVICEID') == "":
     temp_id = generateKey(16, 8)
     dotenv.set_key(dotenv.find_dotenv(), "DEVICEID", temp_id)
+    exit(0)
 
 if os.getenv('AUTHKEY') == "":
     temp_key = generateKey(16, 8)
     dotenv.set_key(dotenv.find_dotenv(), "AUTHKEY", temp_key)
+    exit(0)
 
 
 os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
