@@ -1,4 +1,6 @@
 import os
+import time
+
 import dotenv
 from dotenv import load_dotenv
 from time import sleep
@@ -40,6 +42,11 @@ if os.getenv('AUTHKEY') == "":
 
 os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
 app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
+
+time.sleep(15)
+
+os.environ['ANYDESK'] = "1"
+dotenv.set_key(dotenv.find_dotenv(), "ANYDESK", os.environ["ANYDESK"])
 
 while True:
     try:
