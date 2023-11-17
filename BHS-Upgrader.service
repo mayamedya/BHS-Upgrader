@@ -1,0 +1,12 @@
+[Unit]
+Description=BHS Upgrader Service
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/Desktop/BHS-Upgrader/app.py
+WorkingDirectory=/home/pi/Desktop/BHS-Upgrader/
+User=root
+Restart=always
+Environment=PYTHONUNBUFFERED=1 DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority
+
+[Install]
+WantedBy=multi-user.target
