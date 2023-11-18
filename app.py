@@ -71,3 +71,4 @@ while True:
         sleep(10)
     except:
         print('Error')
+        sleep(10)
