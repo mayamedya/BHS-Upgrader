@@ -40,7 +40,11 @@ if os.getenv('AUTHKEY') == "":
     exit(0)
 
 
-os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
+try:
+    os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
+except:
+    print('No internet?? will just start the process??')
+
 app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
 
 time.sleep(15)
@@ -54,20 +58,24 @@ while True:
         if poll is not None:
             app.terminate()
             app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
-        version = r.get("https://panel.buhikayesenin.com/api/version.php").text
-        version = version[0:5]
-        if version != os.getenv('VERSION'):
-            print('New version found! Downloading...')
-            app.terminate()
-            try:
-                os.system('git clone https://github.com/ardayasar/BHS-Worker.git ' + os.getcwd() + '/versions/' + version)
-            except Exception as e:
-                print('Error while downloading version')
-                quit()
-            os.environ['VERSION'] = version
-            dotenv.set_key(dotenv.find_dotenv(), "VERSION", os.environ["VERSION"])
-            os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
-            app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
+        try:
+            version = r.get("https://panel.buhikayesenin.com/api/version.php").text
+            version = version[0:5]
+            if version != os.getenv('VERSION'):
+                print('New version found! Downloading...')
+                app.terminate()
+                try:
+                    os.system(
+                        'git clone https://github.com/ardayasar/BHS-Worker.git ' + os.getcwd() + '/versions/' + version)
+                except Exception as e:
+                    print('Error while downloading version')
+                    quit()
+                os.environ['VERSION'] = version
+                dotenv.set_key(dotenv.find_dotenv(), "VERSION", os.environ["VERSION"])
+                os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
+                app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
+        except Exception as e:
+            print('There might be a problem with internet. Rolling on like normal...')
         sleep(10)
     except:
         print('Error')
