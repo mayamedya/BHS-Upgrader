@@ -76,6 +76,7 @@ while True:
                 app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
         except Exception as e:
             print('There might be a problem with internet. Rolling on like normal...')
+            app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
         sleep(10)
     except:
         print('Error')
