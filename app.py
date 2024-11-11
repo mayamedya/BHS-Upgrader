@@ -34,9 +34,9 @@ if os.getenv('DEVICEID') == "":
     dotenv.set_key(dotenv.find_dotenv(), "DEVICEID", temp_id)
     exit(0)
 
-if os.getenv('AUTHKEY') == "":
+if os.getenv('DEVICEKEY') == "":
     temp_key = generateKey(16, 8)
-    dotenv.set_key(dotenv.find_dotenv(), "AUTHKEY", temp_key)
+    dotenv.set_key(dotenv.find_dotenv(), "DEVICEKEY", temp_key)
     exit(0)
 
 
