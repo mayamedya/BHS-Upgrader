@@ -66,7 +66,7 @@ while True:
                 app.terminate()
                 try:
                     os.system(
-                        'git clone https://github.com/ardayasar/BHS-Worker.git ' + os.getcwd() + '/versions/' + version)
+                        'git clone https://github.com/mayamedya/BHS-Worker.git ' + os.getcwd() + '/versions/' + version)
                 except Exception as e:
                     print('Error while downloading version')
                     quit()
