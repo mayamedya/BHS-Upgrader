@@ -25,7 +25,7 @@ if not os.path.exists('./versions'):
 if os.getenv('VERSION') == "":
     version = r.get("https://panel.buhikayesenin.com/api/version.php").text
     version = version[0:5]
-    os.system('git clone https://github.com/mayamedya/BHS-Worker.git ./versions +  version')
+    os.system('git clone https://github.com/mayamedya/BHS-Worker.git ./versions/v1.02')
     os.environ['VERSION'] = version
     dotenv.set_key(dotenv.find_dotenv(), "VERSION", os.environ["VERSION"])
 
