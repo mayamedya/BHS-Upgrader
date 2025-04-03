@@ -19,13 +19,13 @@ def generateKey(letters_count, digits_count):
 
 
 load_dotenv()
-if not os.path.exists('./versions'):
-    os.mkdir('./versions')
+if not os.path.exists('./versions/'):
+    os.mkdir('./versions/')
 
 if os.getenv('VERSION') == "":
     version = r.get("https://panel.buhikayesenin.com/api/version.php").text
     version = version[0:5]
-    os.system('git clone https://github.com/mayamedya/BHS-Worker.git /versions/v1.02')
+    os.system('git clone https://github.com/mayamedya/BHS-Worker.git ./versions/' + version)
     os.environ['VERSION'] = version
     dotenv.set_key(dotenv.find_dotenv(), "VERSION", os.environ["VERSION"])
 
@@ -66,7 +66,7 @@ while True:
                 app.terminate()
                 try:
                     os.system(
-                        'git clone https://github.com/mayamedya/BHS-Worker.git ' + os.getcwd() + '/versions/v1.02')
+                        'git clone https://github.com/mayamedya/BHS-Worker.git ' + os.getcwd() + '/versions/' + version)
                 except Exception as e:
                     print('Error while downloading version')
                     quit()
