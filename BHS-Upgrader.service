@@ -2,7 +2,7 @@
 Description=BHS Upgrader Service
 
 [Service]
-ExecStart= python3 /home/pi/Desktop/BHS-Upgrader/app.py
+ExecStart= /usr/python3 /home/pi/Desktop/BHS-Upgrader/app.py
 WorkingDirectory=/home/pi/Desktop/BHS-Upgrader/
 User=root
 Restart=always
