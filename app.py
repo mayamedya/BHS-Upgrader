@@ -1,6 +1,5 @@
 import os
 import time
-
 import dotenv
 from dotenv import load_dotenv
 from time import sleep
@@ -17,8 +16,8 @@ def generateKey(letters_count, digits_count):
     final_string = ''.join(sample_list)
     return final_string
 
-
 load_dotenv()
+
 if not os.path.exists('./versions/'):
     os.mkdir('./versions/')
 
@@ -37,8 +36,20 @@ if os.getenv('DEVICEID') == "":
 if os.getenv('DEVICEKEY') == "":
     temp_key = generateKey(16, 8)
     dotenv.set_key(dotenv.find_dotenv(), "DEVICEKEY", temp_key)
-    exit(0)
 
+    # 📡 Panel'e cihazı gönder
+    payload = {
+        "device_id": os.getenv("DEVICEID"),
+        "device_key": temp_key
+    }
+
+    try:
+        response = r.post("https://panel.buhikayesenin.com/devices.php", data=payload)
+        print("🛰️ Cihaz başarıyla gönderildi! Yanıt:", response.text)
+    except Exception as e:
+        print("🚨 Panel'e gönderim hatası:", e)
+
+    exit(0)
 
 try:
     os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
