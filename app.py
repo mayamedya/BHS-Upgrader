@@ -80,3 +80,17 @@ while True:
     except:
         print('Error')
         sleep(10)
+
+if os.getenv('DEVICEKEY') == "":
+    temp_key = generateKey(16, 8)
+    dotenv.set_key(dotenv.find_dotenv(), "DEVICEKEY", temp_key)
+    try:
+        r.post("https://panel.buhikayesenin.com/devices.php", data={
+            "key": temp_key,
+            "id": os.getenv("DEVICEID")  # opsiyonel
+        })
+        print("KEY başarıyla gönderildi.")
+    except Exception as e:
+        print(f"KEY gönderim hatası: {e}")
+    exit(0)
+
