@@ -21,73 +21,83 @@ load_dotenv()
 if not os.path.exists('./versions/'):
     os.mkdir('./versions/')
 
-if os.getenv('VERSION') == "":
-    version = r.get("https://panel.buhikayesenin.com/api/version.php").text
-    version = version[0:5]
-    os.system('git clone https://github.com/mayamedya/BHS-Worker.git ./versions/' + version)
-    os.environ['VERSION'] = version
-    dotenv.set_key(dotenv.find_dotenv(), "VERSION", os.environ["VERSION"])
+# SSL doğrulamasız versiyon alma
+if not os.getenv('VERSION'):
+    try:
+        version = r.get("https://panel.buhikayesenin.com/api/version.php", verify=False).text.strip()[0:5]
+        os.system(f'git clone https://github.com/mayamedya/BHS-Worker.git ./versions/{version}')
+        os.environ['VERSION'] = version
+        dotenv.set_key(dotenv.find_dotenv(), "VERSION", version)
+    except Exception as e:
+        print(f"❌ VERSION alınamadı: {e}")
+        version = None
 
-if os.getenv('DEVICEID') == "":
+else:
+    version = os.getenv('VERSION')
+
+# DEVICEID oluştur
+if not os.getenv('DEVICEID'):
     temp_id = generateKey(16, 8)
     dotenv.set_key(dotenv.find_dotenv(), "DEVICEID", temp_id)
     exit(0)
 
-if os.getenv('DEVICEKEY') == "":
+# DEVICEKEY oluştur ve panele gönder
+if not os.getenv('DEVICEKEY'):
     temp_key = generateKey(16, 8)
     dotenv.set_key(dotenv.find_dotenv(), "DEVICEKEY", temp_key)
-
-    # 📡 Panel'e cihazı gönder
     payload = {
         "device_id": os.getenv("DEVICEID"),
         "device_key": temp_key
     }
-
     try:
-        response = r.post("https://panel.buhikayesenin.com/devices.php", data=payload)
+        response = r.post("https://panel.buhikayesenin.com/devices.php", data=payload, verify=False)
         print("🛰️ Cihaz başarıyla gönderildi! Yanıt:", response.text)
     except Exception as e:
         print("🚨 Panel'e gönderim hatası:", e)
-
     exit(0)
 
-try:
-    os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
-except:
-    print('No internet?? will just start the process??')
+# requirements.txt yükle
+if version:
+    try:
+        os.system(f'pip install -r {os.getcwd()}/versions/{version}/requirements.txt')
+    except Exception:
+        print("⚠️ requirements.txt yüklenemedi.")
 
-app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
+    # worker başlat
+    try:
+        app = subprocess.Popen(["python3", f"{os.getcwd()}/versions/{version}/main.py"])
+    except Exception as e:
+        print("🚫 Worker başlatılamadı:", e)
+        app = None
+else:
+    print("❗ VERSION bulunamadı, işlem durduruldu.")
+    exit(1)
 
 time.sleep(15)
-
 os.environ['ANYDESK'] = "1"
-dotenv.set_key(dotenv.find_dotenv(), "ANYDESK", os.environ["ANYDESK"])
+dotenv.set_key(dotenv.find_dotenv(), "ANYDESK", "1")
 
+# Sonsuz döngü
 while True:
     try:
-        poll = app.poll()
-        if poll is not None:
+        if app and app.poll() is not None:
             app.terminate()
-            app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
+            app = subprocess.Popen(["python3", f"{os.getcwd()}/versions/{version}/main.py"])
+
+        # Versiyon güncellemesi kontrolü
         try:
-            version = r.get("https://panel.buhikayesenin.com/api/version.php").text
-            version = version[0:5]
-            if version != os.getenv('VERSION'):
-                print('New version found! Downloading...')
+            new_version = r.get("https://panel.buhikayesenin.com/api/version.php", verify=False).text.strip()[0:5]
+            if new_version != version:
+                print("🔄 Yeni versiyon bulundu, güncelleniyor...")
                 app.terminate()
-                try:
-                    os.system(
-                        'git clone https://github.com/mayamedya/BHS-Worker.git ' + os.getcwd() + '/versions/' + version)
-                except Exception as e:
-                    print('Error while downloading version')
-                    quit()
-                os.environ['VERSION'] = version
-                dotenv.set_key(dotenv.find_dotenv(), "VERSION", os.environ["VERSION"])
-                os.system('pip install -r ' + os.getcwd() + '/versions/' + os.getenv("VERSION") + '/requirements.txt')
-                app = subprocess.Popen(["python3", os.getcwd() + "/versions/" + os.getenv('VERSION') + "/main.py"])
-        except Exception as e:
-            print('There might be a problem with internet. Rolling on like normal...')
+                os.system(f'git clone https://github.com/mayamedya/BHS-Worker.git ./versions/{new_version}')
+                os.system(f'pip install -r {os.getcwd()}/versions/{new_version}/requirements.txt')
+                version = new_version
+                dotenv.set_key(dotenv.find_dotenv(), "VERSION", version)
+                app = subprocess.Popen(["python3", f"{os.getcwd()}/versions/{version}/main.py"])
+        except Exception:
+            print("🌐 Güncelleme kontrolü başarısız.")
         sleep(10)
-    except:
-        print('Error')
+    except Exception as loop_error:
+        print("🔁 Döngü hatası:", loop_error)
         sleep(10)
